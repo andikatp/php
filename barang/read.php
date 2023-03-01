@@ -1,4 +1,3 @@
 <?php
 include('function_barang.php');
-readBarang();
-?>
+echo json_encode(readBarang());
