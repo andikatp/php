@@ -25,11 +25,13 @@ function readBarang()
     // Execute the SQL statement
     $data = array();
     if (!$qry || mysqli_affected_rows($conn) <= 0) {
+        http_response_code(404);
         $data = array("Status" => "Error", "Message" => "Tidak Menemukan Data");
     } else {
         while ($row = mysqli_fetch_assoc($qry)) {
             $data[] = $row;
         }
+
     }
     return $data;
 }
@@ -92,11 +94,9 @@ function editBarang()
     $sql = "UPDATE barang SET id_user='$user', barcode='$barcode', nama_barang='$nama', kategori='$kategori', harga_beli='$hargaB', harga_jual='$hargaJ', stok='$stok' WHERE id_barang=$id";
 
     // Execute the SQL statement
-    mysqli_query($conn, $sql);
-
-    if (mysqli_affected_rows($conn) > 0) {
+    if (mysqli_query($conn, $sql)) {
         http_response_code(200); // OK
-        $response = array("Status" => "Success", "Message" => "Data Telah Diupdate.");
+        $response = array("Status" => "Success", "Message" => "Data Telah Diupdate");
         return $response;
     } else {
         http_response_code(500); // Internal server error
@@ -119,8 +119,8 @@ function deleteBarang()
 
     $id = mysqli_real_escape_string($conn, $_POST['id']);
     $sql = "DELETE FROM barang WHERE id_barang = '$id'";
-    mysqli_query($conn, $sql);
-    if (mysqli_affected_rows($conn) > 0) {
+
+    if (mysqli_query($conn, $sql)) {
         http_response_code(200);
         $response = array("Status" => "Success", "Message" => "Data Berhasil Dihapus");
         return $response;
