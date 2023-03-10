@@ -7,25 +7,27 @@ function readUser()
     header("Content-Type: application/json");
     global $conn;
 
-    if (empty($_POST["name"])) {
-        http_response_code(400);
-        $response = array("Status" => "Error", "Message" => "Masukkan Nama User");
+    if (empty($_POST["username"]) || empty($_POST["password"])) {
+        http_response_code(200);
+        $response = array("Status" => "400", "Message" => "Masukkan Username dan Password User");
         return $response;
     }
 
-    $name = mysqli_escape_string($conn, $_POST["name"]);
+    $username = mysqli_escape_string($conn, $_POST["username"]);
+    $password = mysqli_escape_string($conn, $_POST["password"]);
 
-    $order = "SELECT * FROM users WHERE username LIKE '%$name%' LIMIT 25";
+    $order = "SELECT * FROM users WHERE username = '$username' and `password` = '$password'";
     $qry = mysqli_query($conn, $order);
 
     $data = array();
-    if (!$qry || mysqli_affected_rows($conn) <= 0) {
-        http_response_code(404);
-        $data = array("Status" => "Error", "Message" => "Tidak Ada Data");
+    if (!$qry || mysqli_num_rows($qry) == 0) {
+        http_response_code(200);
+        $data = ["Status" => "404", "Message" => "Periksa username dan password"];
     } else {
-        while ($row = mysqli_fetch_assoc($qry)) {
-            $data[] = $row;
-        }
+        $data["Status"] = "200";
+        $data["Message"] = "Success";
+        $data["User"] = mysqli_fetch_assoc($qry);
+
     }
     return $data;
 }
@@ -117,3 +119,4 @@ function deleteUser()
     }
 
 }
+?>
